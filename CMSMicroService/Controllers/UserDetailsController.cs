@@ -35,51 +35,66 @@ namespace CMSMicroService.Controllers
             return _context.Users.Where(p => p.userId == userId);
         }
 
-        // POST api/<UserDetailsController>
+        //I think this is what they wanted
         [HttpPost]
-        public string Post([FromBody] string UserName)
+        public IActionResult Post([FromBody] UserModel user)
         {
-            //Check if the user is null or empty
-            if (String.IsNullOrEmpty(UserName))
+            try
             {
-                return "Username cannot be null or empty";
+                if (user == null)
+                {
+                    return BadRequest("User object is null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid model object");
+                }
+
+                //Check if the user exists
+                if (Common.CheckUserExists(_context, user.username))
+                {
+                    return BadRequest();
+
+                }
+
+                Common.AddUserToDB(_context, user);
+
+                return Ok();
             }
-            //Check if the user exists
-            if (Common.CheckUserExists(_context, UserName))
+            catch (Exception ex)
             {
-                return string.Format("User {0} already Exists", UserName);
+                return StatusCode(500, $"Internal server error: {ex}");
             }
-           //Call method to add user to DB
-            Common.AddUserToDB(_context, UserName);
-          
-            return "User added successfully";
-        }
+        }             
 
         // PUT api/<UserDetailsController>/5
         [HttpPut("{userId}")]
-        public string Put(int userId, [FromBody] string UserName)
+        public IActionResult Put([FromBody] UserModel user)
         {        
-            if (!Common.CheckUserExistsById(_context, userId))
-            {
-                return "User not found";
+            if (!Common.CheckUserExistsById(_context, user.userId))
+            {            
+                return BadRequest();
             }
 
-            Common.UpdateDBUser(_context, userId, UserName);           
+            Common.UpdateDBUser(_context, user);
 
-            return "User Updated";
+            return Ok();
         }
 
         // DELETE api/<UserDetailsController>/5
         [HttpDelete("{userId}")]
-        public string Delete(int userId)
+        public IActionResult Delete(int userId)
         {
             if (!Common.CheckUserExistsById(_context, userId))
             {
-                return "User not found";
+                return BadRequest();
             }
 
-            Common.DeleteDBUser(_context, userId);            
-            return "User Deleted";
+            Common.DeleteDBUser(_context, userId);
+            return Ok();
         }
+
+  
     }
 }

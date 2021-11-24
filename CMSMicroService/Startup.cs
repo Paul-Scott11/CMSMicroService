@@ -32,6 +32,7 @@ namespace CMSMicroService
             services.AddControllers();
 
             services.AddDbContext<ApiDBContext>(opt => opt.UseInMemoryDatabase("CMSInMemoryDatabase"));
+            //services.AddDbContext<ApiDBContext>(x => x.UseSqlServer(Configuration.GetConnectionString("SQLServerConnection")));
 
             services.AddSwaggerGen(c =>
             {

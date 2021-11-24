@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using CMSMicroService.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CMSMicroService.Controllers.Tests
 {
@@ -27,23 +28,30 @@ namespace CMSMicroService.Controllers.Tests
             _context = new ApiDBContext(new DbContextOptionsBuilder<ApiDBContext>().UseInMemoryDatabase(databaseName: "TestCMSInMemoryDatabase").Options);
             API = new UserDetailsController(_context);
             //Act
-            string result = API.Post("Paul");
+            UserModel user = new UserModel();
+            user.username = "Paul";         
+            var result = API.Post(user) as StatusCodeResult;
             _context.Dispose();
             //Assert
-            Assert.AreEqual("User added successfully", result);
+            Assert.AreEqual(200, result.StatusCode);
         }
 
+        [TestMethod()]
         public void T02Post_AddExistingUser_ReturnsUserExistsMessage()
         {
             //Arrange
             _context = new ApiDBContext(new DbContextOptionsBuilder<ApiDBContext>().UseInMemoryDatabase(databaseName: "TestCMSInMemoryDatabase").Options);
             API = new UserDetailsController(_context);
-            string existing = API.Post("Paul");
+            UserModel user = new UserModel();
+            user.username = "Paul";
+            var existing = API.Post(user);
             //Act
-            string result = API.Post("Paul");
+            UserModel user2 = new UserModel();
+            user2.username = "Paul";
+            var result = API.Post(user2) as StatusCodeResult; ;
             _context.Dispose();
             //Assert
-            Assert.AreEqual("User Paul already Exists", result);
+            Assert.AreEqual(400, result.StatusCode);
         }
 
         [TestMethod()]
@@ -52,8 +60,10 @@ namespace CMSMicroService.Controllers.Tests
             //Arrange
             _context = new ApiDBContext(new DbContextOptionsBuilder<ApiDBContext>().UseInMemoryDatabase(databaseName: "TestCMSInMemoryDatabase").Options);
             API = new UserDetailsController(_context);
-            string user1 = API.Post("Paul");
-            string user2 = API.Post("Dave");
+            UserModel user = new UserModel();
+            user.username = "Paul";
+            user.username = "dave";
+            var user1 = API.Post(user);
             //Act          
             var result = API.Get();
             _context.Dispose();
@@ -67,8 +77,10 @@ namespace CMSMicroService.Controllers.Tests
             //Arrange
             _context = new ApiDBContext(new DbContextOptionsBuilder<ApiDBContext>().UseInMemoryDatabase(databaseName: "TestCMSInMemoryDatabase").Options);
             API = new UserDetailsController(_context);
-            string user1 = API.Post("Paul");
-            string user2 = API.Post("Dave");
+            UserModel user = new UserModel();
+            user.username = "Paul";
+            user.username = "dave";
+            var user1 = API.Post(user);          
             //Act
             var result = API.Get(1);
             _context.Dispose();
@@ -82,13 +94,18 @@ namespace CMSMicroService.Controllers.Tests
             //Arrange
             _context = new ApiDBContext(new DbContextOptionsBuilder<ApiDBContext>().UseInMemoryDatabase(databaseName: "TestCMSInMemoryDatabase").Options);
             API = new UserDetailsController(_context);
-            string user1 = API.Post("Paul");
-            string user2 = API.Post("Dave");
+             UserModel user = new UserModel();
+            user.username = "Paul";
+            user.username = "dave";
+            var user1 = API.Post(user);
             //Act
-            var result = API.Put(1, "James");
+            UserModel user2 = new UserModel();
+            user2.userId = 1;
+            user2.username = "James";
+            var result = API.Put(user2) as StatusCodeResult;
             _context.Dispose();
             //Assert
-            Assert.AreEqual("User Updated", result);            
+            Assert.AreEqual(200, result.StatusCode);            
         }
 
         [TestMethod()]
@@ -96,13 +113,18 @@ namespace CMSMicroService.Controllers.Tests
         {
             //Arrange
             _context = new ApiDBContext(new DbContextOptionsBuilder<ApiDBContext>().UseInMemoryDatabase(databaseName: "TestCMSInMemoryDatabase").Options);
-            API = new UserDetailsController(_context); 
-            string user1 = API.Post("Paul");           
+            API = new UserDetailsController(_context);
+            UserModel user = new UserModel();
+            user.username = "Paul";            
+            var user1 = API.Post(user);
             //Act
-            var result = API.Put(99, "Dave");
+            UserModel user2 = new UserModel();
+            user2.userId = 99;
+            user2.username = "Dave";
+            var result = API.Put(user2) as StatusCodeResult; 
             _context.Dispose();
             //Assert
-            Assert.AreEqual("User not found", result);
+            Assert.AreEqual(400, result.StatusCode);
         }
 
         [TestMethod()]
@@ -111,14 +133,16 @@ namespace CMSMicroService.Controllers.Tests
             //Arrange
             _context = new ApiDBContext(new DbContextOptionsBuilder<ApiDBContext>().UseInMemoryDatabase(databaseName: "TestCMSInMemoryDatabase").Options);
             API = new UserDetailsController(_context);
-            string user1 = API.Post("Paul");
-            string user2 = API.Post("Dave");
+            UserModel user = new UserModel();
+            user.username = "Paul";
+            user.username = "dave";
+            var user1 = API.Post(user);
             //Act
-            var result = API.Delete(1);
+            var result = API.Delete(1) as StatusCodeResult;
             _context.Dispose();
             //Assert
-            Assert.AreEqual("User Deleted", result);
-            
+            Assert.AreEqual(200, result.StatusCode);
+
         }
 
         [TestMethod()]
@@ -127,13 +151,15 @@ namespace CMSMicroService.Controllers.Tests
             //Arrange
             _context = new ApiDBContext(new DbContextOptionsBuilder<ApiDBContext>().UseInMemoryDatabase(databaseName: "TestCMSInMemoryDatabase").Options);
             API = new UserDetailsController(_context);
-            string user1 = API.Post("Paul");
-            string user2 = API.Post("Dave");          
+            UserModel user = new UserModel();
+            user.username = "Paul";
+            user.username = "dave";
+            var user1 = API.Post(user);
             //Act
-            var result = API.Delete(99);
+            var result = API.Delete(99) as StatusCodeResult;
             _context.Dispose();
             //Assert
-            Assert.AreEqual("User not found", result);
+            Assert.AreEqual(400, result.StatusCode);
 
         }
     }

@@ -9,12 +9,12 @@ namespace CMSMicroService
 {
     public class Common
     {
-        public static void AddUserToDB(ApiDBContext context, string username)
+        public static void AddUserToDB(ApiDBContext context, UserModel UserToAdd)
         {         
-            var UserToAdd = new Models.UserModel
-            {               
-                username = username,
-            };
+            //var UserToAdd = new Models.UserModel
+            //{               
+            //    username = username,
+            //};
 
             context.Users.Add(UserToAdd);
 
@@ -22,13 +22,13 @@ namespace CMSMicroService
             
         }
 
-        public static void UpdateDBUser(ApiDBContext context, int userId, string username)
+        public static void UpdateDBUser(ApiDBContext context, UserModel UserToUpdate)
         {
-            var UserToUpdate = new UserModel
-            {
-                userId = userId,
-                username = username
-            };
+            //var UserToUpdate = new UserModel
+            //{
+            //    userId = userId,
+            //    username = username
+            //};
 
             context.Users.UpdateRange(UserToUpdate);
 
